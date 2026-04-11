@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.BitmapFonts;
-using SuperCoolCustomText;
+using SuperCoolCustomText.Source;
 using System.IO;
 
 namespace Sample.OpenGL

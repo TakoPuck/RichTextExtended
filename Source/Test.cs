@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace SuperCoolCustomText;
+namespace SuperCoolCustomText.Source;
 
 public static class Test
 {
