@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36915.13 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AmazinglyCoolCustomText", "AmazinglyCoolCustomText.csproj", "{4B3FD928-77C8-4258-9489-31ED04BC6DF1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperCoolCustomText", "SuperCoolCustomText.csproj", "{4B3FD928-77C8-4258-9489-31ED04BC6DF1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACCTextSample.OpenGL", "Samples\ACCTextSample.OpenGL\ACCTextSample.OpenGL.csproj", "{3923B8A4-509F-6B52-C610-B1F6C71C60F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{4B3FD928-77C8-4258-9489-31ED04BC6DF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B3FD928-77C8-4258-9489-31ED04BC6DF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4B3FD928-77C8-4258-9489-31ED04BC6DF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3923B8A4-509F-6B52-C610-B1F6C71C60F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3923B8A4-509F-6B52-C610-B1F6C71C60F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3923B8A4-509F-6B52-C610-B1F6C71C60F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3923B8A4-509F-6B52-C610-B1F6C71C60F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
