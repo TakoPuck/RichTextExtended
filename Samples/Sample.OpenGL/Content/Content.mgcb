@@ -1,0 +1,27 @@
+
+#----------------------------- Global Properties ----------------------------#
+
+/outputDir:bin/$(Platform)
+/intermediateDir:obj/$(Platform)
+/platform:DesktopGL
+/config:
+/profile:Reach
+/compress:False
+
+#-------------------------------- References --------------------------------#
+
+
+#---------------------------------- Content ---------------------------------#
+
+#begin Fonts/boldWispelldomFnt_0.png
+/copy:Fonts/boldWispelldomFnt_0.png
+
+#begin Fonts/boldWispelldomFnt.fnt
+/copy:Fonts/boldWispelldomFnt.fnt
+
+#begin Fonts/WispelldomFnt_0.png
+/copy:Fonts/WispelldomFnt_0.png
+
+#begin Fonts/WispelldomFnt.fnt
+/copy:Fonts/WispelldomFnt.fnt
+

@@ -1,11 +1,11 @@
 ﻿using System.Diagnostics;
 
-namespace AmazinglyCoolCustomText;
+namespace SuperCoolCustomText;
 
 public static class Test
 {
-    public static void HelloWorld()
+    public static string HelloWorld()
     {
-        Debug.Write("Hello World from Amazingly cool custom text!");
+        return "Hello World from Amazingly cool custom text!!!";
     }
 }
