@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.BitmapFonts;
 using RichTextExtended.Source;
+using System.Diagnostics;
 using System.IO;
 
 namespace Sample.OpenGL
@@ -22,8 +23,11 @@ namespace Sample.OpenGL
 
         protected override void Initialize()
         {
-
             _bmfont = BitmapFont.FromFile(GraphicsDevice, Path.Combine("Content", "Fonts", "WispelldomFnt.fnt"));
+
+            Scanner scanner = new();
+            string input = "<<<<<<speed=1>Hi>><>< <wave=1 2 3><color=red>R</color><color=green>G</color><color=blue>B</color></wave>!</speed>";
+            var b = scanner.Scan(input);
 
             base.Initialize();
         }
@@ -46,7 +50,7 @@ namespace Sample.OpenGL
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin();
-            _spriteBatch.DrawString(_bmfont, Test.HelloWorld(), new Vector2(50, 50), Color.White);
+            _spriteBatch.DrawString(_bmfont, "Hi", new Vector2(50, 50), Color.White);
             _spriteBatch.End();
 
             base.Draw(gameTime);
