@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36915.13
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperCoolCustomText", "SuperCoolCustomText.csproj", "{4B3FD928-77C8-4258-9489-31ED04BC6DF1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RichTextExtended", "RichTextExtended.csproj", "{4B3FD928-77C8-4258-9489-31ED04BC6DF1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.OpenGL", "Samples\Sample.OpenGL\Sample.OpenGL.csproj", "{4A1FA459-C452-4E81-BCB3-9ED928113ADD}"
 EndProject
