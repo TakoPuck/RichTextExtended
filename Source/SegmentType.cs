@@ -2,7 +2,7 @@
 
 public enum SegmentType
 {
-    TagOpen,
-    TagClose,
+    OpenTag,
+    CloseTag,
     Text
 }

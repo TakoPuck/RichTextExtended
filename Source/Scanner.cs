@@ -5,32 +5,105 @@ namespace RichTextExtended.Source;
 
 public class Scanner
 {
-    private readonly StringBuilder _sb = new();
+    private readonly StringBuilder _sbText = new();
+    private readonly StringBuilder _sbTag = new();
 
     private List<Segment> _segments;
-    private Segment _current;
+    private bool _tagOpened;
+    private bool _beforeEqual = true;
+    private bool _hasLeftPart;
+    private bool _hasRightPart;
+    private bool _isCloseTag;
 
-    // TODO
-    //private bool IsTagValid(string tag)
-    //{
-    //    // <identifier=value>
-    //}
 
-    private void Flush()
+    private static bool IsNextCharTagOpener(string input, int i)
+    => i < input.Length - 1 && input[i + 1] == '<';
+
+    private static bool IsCharProtected(string input, int i)
+        => i > 0 && input[i - 1] == '\\';
+
+    private static bool IsCharValidLeft(char c)
+        => char.IsAsciiLetter(c) // color
+        || c == '-';             // in-color
+
+    private static bool IsCharValidRight(char c)
+        => char.IsAsciiDigit(c)  // 1
+        || char.IsAsciiLetter(c) // red
+        || c == ' '              // 1 1
+        || c == '#'              // #001100
+        || c == '.';             // 0.1
+
+    private bool ValidateCharInTag(char c)
     {
-        if (_current == null) return;
-
-        // Remove '/' from closing tag
-        if (_current.Type == SegmentType.TagClose)
+        if (c == '/')
         {
-            _sb.Remove(0, 1);
+            if (_isCloseTag || _hasLeftPart) return false;
+
+            _isCloseTag = true;
+            return true;
+        }
+        
+        if (c == '=')
+        {
+            if (!_beforeEqual || !_hasLeftPart) return false;
+
+            _beforeEqual = false;
+            return true;
         }
 
-        _current.Value = _sb.ToString();
-        _sb.Clear();
+        if (_beforeEqual)
+        {
+            bool isValidLeft = IsCharValidLeft(c);
+            _hasLeftPart |= isValidLeft;
+            return isValidLeft;
+        }
 
-        _segments.Add(_current);
-        _current = null;
+        bool isValidRight = IsCharValidRight(c);
+        _hasRightPart |= isValidRight;
+        return isValidRight;
+    }
+
+    private bool IsTagValid()
+    {
+        return _isCloseTag
+            ? (_hasLeftPart && _beforeEqual && !_hasRightPart)
+            : (_hasLeftPart && !_beforeEqual && _hasRightPart);
+    }
+
+    private void ResetTagValidation()
+    {
+        _tagOpened = _hasLeftPart = _hasRightPart = _isCloseTag = false;
+        _beforeEqual = true;
+    }
+
+    private void Flush(StringBuilder sb, SegmentType type)
+    {
+        Segment s = new(type, sb.ToString());
+        _segments.Add(s);
+        sb.Clear();
+    }
+
+    private void FlushText()
+    {
+        if (_sbText.Length <= 0) return;
+
+        Flush(_sbText, SegmentType.Text);
+    }
+
+    private void FlushTag()
+    {
+        var type = _sbTag[1] == '/' ? SegmentType.CloseTag : SegmentType.OpenTag;
+
+        // Remove '<' or '</' from tag
+        _sbTag.Remove(0, type == SegmentType.CloseTag ? 2 : 1);
+
+        Flush(_sbTag, type);
+    }
+
+    private void EmptyTagIntoText()
+    {
+        _sbText.Append(_sbTag);
+        _sbTag.Clear();
     }
 
     public List<Segment> Scan(string input)
@@ -41,24 +114,39 @@ public class Scanner
         {
             char c = input[i];
 
-            if (c == '<' && i < input.Length - 1 && input[i + 1] != '<')
+            if (_tagOpened)
             {
-                Flush();
-                var type = input[i + 1] == '/' ? SegmentType.TagClose : SegmentType.TagOpen;
-                _current = new(type);
+                if (c != '>' && ValidateCharInTag(c))
+                {
+                    _sbTag.Append(c);
+                    continue;
+                }
+
+                if (c == '>' && IsTagValid())
+                {
+                    FlushText();
+                    FlushTag();
+                    ResetTagValidation();
+                    continue;
+                }
+
+                EmptyTagIntoText();
+                ResetTagValidation();
             }
-            else if (c == '>' && _current != null && _current.Type != SegmentType.Text)
+
+            if (c == '<' && !IsNextCharTagOpener(input, i) && !IsCharProtected(input, i))
             {
-                Flush();
+                _tagOpened = true;
+                _sbTag.Append(c);
             }
             else
             {
-                _current ??= new(SegmentType.Text);
-                _sb.Append(c);
+                _sbText.Append(c);
             }
         }
 
-        Flush();
+        EmptyTagIntoText();
+        FlushText();
 
         return _segments;
     }

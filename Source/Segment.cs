@@ -4,12 +4,13 @@ public class Segment
 {
     public SegmentType Type { get; }
     
-    public string Value { get; set; }
+    public string Value { get; }
 
 
-    public Segment(SegmentType type)
+    public Segment(SegmentType type, string value)
     { 
         Type = type;
+        Value = value;
     }
 
     public override string ToString()
