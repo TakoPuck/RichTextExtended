@@ -10,17 +10,17 @@ public class Scanner
 
     private List<Segment> _segments;
     private bool _tagOpened;
+    private bool _isProtected;
     private bool _beforeEqual = true;
     private bool _hasLeftPart;
     private bool _hasRightPart;
     private bool _isCloseTag;
 
-
     private static bool IsNextCharTagOpener(string input, int i)
-    => i < input.Length - 1 && input[i + 1] == '<';
+        => i < input.Length - 1 && input[i + 1] == '<';
 
-    private static bool IsCharProtected(string input, int i)
-        => i > 0 && input[i - 1] == '\\';
+    private static bool IsTagOpenerProtection(string input, int i)
+        => i < input.Length - 2 && input[i] == '\\' && IsNextCharTagOpener(input, i) && !IsNextCharTagOpener(input, i + 1);
 
     private static bool IsCharValidLeft(char c)
         => char.IsAsciiLetter(c) // color
@@ -70,9 +70,9 @@ public class Scanner
             : (_hasLeftPart && !_beforeEqual && _hasRightPart);
     }
 
-    private void ResetTagValidation()
+    private void ResetFlags()
     {
-        _tagOpened = _hasLeftPart = _hasRightPart = _isCloseTag = false;
+        _isProtected = _tagOpened = _hasLeftPart = _hasRightPart = _isCloseTag = false;
         _beforeEqual = true;
     }
 
@@ -122,26 +122,43 @@ public class Scanner
                     continue;
                 }
 
+                bool consumedProtection = false;
                 if (c == '>' && IsTagValid())
+                { 
+                    if (_isProtected)
+                    {
+                        consumedProtection = true;
+                    }
+                    else
+                    {
+                        FlushText();
+                        FlushTag();
+                        ResetFlags();
+                        continue;
+                    }
+                }
+
+                if (!consumedProtection && _isProtected)
                 {
-                    FlushText();
-                    FlushTag();
-                    ResetTagValidation();
-                    continue;
+                    _sbText.Append('\\');
                 }
 
                 EmptyTagIntoText();
-                ResetTagValidation();
+                ResetFlags();
             }
 
-            if (c == '<' && !IsNextCharTagOpener(input, i) && !IsCharProtected(input, i))
+            if (c == '<' && !IsNextCharTagOpener(input, i))
             {
                 _tagOpened = true;
                 _sbTag.Append(c);
             }
-            else
+            else if (!IsTagOpenerProtection(input, i))
             {
                 _sbText.Append(c);
+            }
+            else
+            {
+                _isProtected = true;
             }
         }
 

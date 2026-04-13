@@ -26,8 +26,8 @@ namespace Sample.OpenGL
             _bmfont = BitmapFont.FromFile(GraphicsDevice, Path.Combine("Content", "Fonts", "WispelldomFnt.fnt"));
 
             Scanner scanner = new();
-            string input = "<<<<<<speed=1>Hi>><>\\<o=2><a=2><b==3>< <wave=1 2 3><color=red>R<//color><color=green>G</color><color=blue>B</color/></wave>!</speed=2>";
-            var b = scanner.Scan(input);
+            string input = "<\\<<<<<speed=1>Hi>>\\<>\\\\<o=2><a=2>\\<b==3>< <wave=1 2 3><color=red>R<//color><color=green>G</color><color=blue>B</color/></wave>!\\</speed=2>\\<";
+            var b = Tokenizer.Tokenize(scanner.Scan(input));
 
             base.Initialize();
         }
