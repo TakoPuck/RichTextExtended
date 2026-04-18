@@ -1,7 +1,8 @@
-﻿using System;
+﻿using RichTextExtended.Source.Scanner;
+using System;
 using System.Collections.Generic;
 
-namespace RichTextExtended.Source;
+namespace RichTextExtended.Source.Tokenizer;
 
 public static class Tokenizer
 {

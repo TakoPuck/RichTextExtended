@@ -1,4 +1,4 @@
-﻿namespace RichTextExtended.Source;
+﻿namespace RichTextExtended.Source.Tokenizer;
 
 public class OpenTagToken : IToken
 {

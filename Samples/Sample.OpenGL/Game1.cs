@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.BitmapFonts;
 using RichTextExtended.Source;
+using RichTextExtended.Source.Scanner;
 using System.Diagnostics;
 using System.IO;
 

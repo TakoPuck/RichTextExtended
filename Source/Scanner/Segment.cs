@@ -1,4 +1,4 @@
-﻿namespace RichTextExtended.Source;
+﻿namespace RichTextExtended.Source.Scanner;
 
 public class Segment
 {

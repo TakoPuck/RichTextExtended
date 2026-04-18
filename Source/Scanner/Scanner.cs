@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace RichTextExtended.Source;
+namespace RichTextExtended.Source.Scanner;
 
 public class Scanner
 {
