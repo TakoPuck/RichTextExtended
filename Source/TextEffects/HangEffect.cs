@@ -1,4 +1,7 @@
-﻿namespace RichTextExtended.Source.TextEffects;
+﻿using RichTextExtended.Source.Parser;
+using RichTextExtended.Source.Tokenizer;
+
+namespace RichTextExtended.Source.TextEffects;
 
 public class HangEffect : TextEffect
 {
@@ -11,4 +14,15 @@ public class HangEffect : TextEffect
     public float Amplitude { get; set; }
 
     public float Phase { get; set; }
+
+
+    public static HangEffect Create(OpenTagToken token)
+    {
+        return new()
+        {
+            Frequency = ParserHelper.ParseFloat(token.GetArg(1), 6f),
+            Amplitude = ParserHelper.ParseFloat(token.GetArg(2), 9f),
+            Phase = ParserHelper.ParseFloat(token.GetArg(3), 1f)
+        };
+    }
 }

@@ -1,4 +1,7 @@
-﻿namespace RichTextExtended.Source.TextEffects;
+﻿using RichTextExtended.Source.Parser;
+using RichTextExtended.Source.Tokenizer;
+
+namespace RichTextExtended.Source.TextEffects;
 
 public class TransitionPauseEffect : TextEffect
 {
@@ -6,7 +9,17 @@ public class TransitionPauseEffect : TextEffect
 
     public override string TagName => TAG;
 
+    public float Duration { get; set; }
+
     public TransitionMode Mode { get; set; }
 
-    public float Duration { get; set; }
+
+    public static TransitionPauseEffect Create(OpenTagToken token)
+    {
+        return new()
+        {
+            Duration = ParserHelper.ParseFloat(token.GetArg(0), 1f),
+            Mode = ParserHelper.ParseTransitionMode(token.GetArg(1), TransitionMode.In)
+        };
+    }
 }

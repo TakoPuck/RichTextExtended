@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using RichTextExtended.Source.Parser;
+using RichTextExtended.Source.Tokenizer;
 
 namespace RichTextExtended.Source.TextEffects;
 
@@ -13,4 +15,15 @@ public class ShadowEffect : TextEffect
     public float X { get; set;  }
 
     public float Y { get; set; }
+
+
+    public static ShadowEffect Create(OpenTagToken token)
+    {
+        return new()
+        {
+            Color = ParserHelper.ParseColor(token.GetArg(0), Color.Gray),
+            X = ParserHelper.ParseFloat(token.GetArg(1), -1f),
+            Y = ParserHelper.ParseFloat(token.GetArg(2), 1f)
+        };
+    }
 }

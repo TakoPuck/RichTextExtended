@@ -1,4 +1,7 @@
-﻿namespace RichTextExtended.Source.TextEffects;
+﻿using RichTextExtended.Source.Parser;
+using RichTextExtended.Source.Tokenizer;
+
+namespace RichTextExtended.Source.TextEffects;
 
 public class TransitionIntervalEffect : TextEffect
 {
@@ -6,7 +9,17 @@ public class TransitionIntervalEffect : TextEffect
 
     public override string TagName => TAG;
 
+    public float Interval { get; set; }
+
     public TransitionMode Mode { get; set; }
 
-    public float Interval { get; set; }
+
+    public static TransitionIntervalEffect Create(OpenTagToken token)
+    {
+        return new()
+        {
+            Interval = ParserHelper.ParseFloat(token.GetArg(0), 0.05f),
+            Mode = ParserHelper.ParseTransitionMode(token.GetArg(1), TransitionMode.In)
+        };
+    }
 }
