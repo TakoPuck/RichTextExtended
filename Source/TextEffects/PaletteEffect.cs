@@ -2,6 +2,7 @@
 using RichTextExtended.Source.Banks;
 using RichTextExtended.Source.Parser;
 using RichTextExtended.Source.Tokenizer;
+using System.Runtime.InteropServices;
 
 namespace RichTextExtended.Source.TextEffects;
 
@@ -18,19 +19,24 @@ public class PaletteEffect : TextEffect
 
     public static PaletteEffect Create(OpenTagToken token)
     {
+        var args = token.Args;
+        
+        float interval = 0f;
+        bool hasInterval = args.Length > 0 && float.TryParse(args[^1], out interval);
+        int colorCount = args.Length - (hasInterval ? 1 : 0);
+
         if (!BankRegistry.Instance.PaletteBank.TryGetValue(token.GetArg(0), out Color[] colors))
         {
-            int paletteLength = token.Args.Length - 1;
-            if (paletteLength <= 0)
+            if (colorCount <= 0)
             {
                 colors = [Color.White];
             }
             else
             {
-                colors = new Color[paletteLength];
-                for (int i = 0; i < paletteLength; i++)
+                colors = new Color[colorCount];
+                for (int i = 0; i < colorCount; i++)
                 {
-                    colors[i] = ParserHelper.ParseColor(token.Args[i], Color.White);
+                    colors[i] = ParserHelper.ParseColor(args[i], Color.White);
                 }
             }
         }
@@ -38,7 +44,7 @@ public class PaletteEffect : TextEffect
         return new()
         {
             Colors = colors,
-            Interval = ParserHelper.ParseFloat(token.GetArg(token.Args.Length - 1), 0.075f)
+            Interval = hasInterval ? interval : 0.075f
         };
     }
 }
