@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.BitmapFonts;
+using RichTextExtended.Source.Parser;
 using RichTextExtended.Source.Scanner;
 using RichTextExtended.Source.Tokenizer;
 using System.Diagnostics;
@@ -27,8 +28,14 @@ namespace Sample.OpenGL
             _bmfont = BitmapFont.FromFile(GraphicsDevice, Path.Combine("Content", "Fonts", "WispelldomFnt.fnt"));
 
             Scanner scanner = new();
-            string input = "<\\<<<<<speed=1>Hi>>\\<>\\\\<o=2><a=2>\\<b==3>< <wave=1 2 3><color=red>R<//color><color=green>G</color><color=blue>B</color/></wave>!\\</speed=2>\\<";
-            var b = Tokenizer.Tokenize(scanner.Scan(input));
+            Parser parser = new();
+
+            string input = "<c=red> Hi <w=1.1 2.2 0 h>there</w></c> !";
+            var segments = scanner.Scan(input);
+            var tokens = Tokenizer.Tokenize(segments);
+            var output = parser.Parse(tokens);
+
+            int debug = 1;
 
             base.Initialize();
         }
