@@ -10,6 +10,7 @@
     </PropertyGroup>
 	<ItemGroup>
 		<Compile Remove="Samples\**\*.cs" />
+		<Compile Remove="RichTextExtended.Tests\**\*.cs" />
 	</ItemGroup>
   <ItemGroup>
     <PackageReference Include="MonoGame.Extended" Version="5.5.1" />

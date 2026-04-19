@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36915.13
+# Visual Studio Version 18
+VisualStudioVersion = 18.5.11709.299 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RichTextExtended", "RichTextExtended.csproj", "{4B3FD928-77C8-4258-9489-31ED04BC6DF1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.OpenGL", "Samples\Sample.OpenGL\Sample.OpenGL.csproj", "{4A1FA459-C452-4E81-BCB3-9ED928113ADD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RichTextExtended.Tests", "RichTextExtended.Tests\RichTextExtended.Tests.csproj", "{4308A69E-3DAF-4F96-BBDD-CB5772269F51}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{4A1FA459-C452-4E81-BCB3-9ED928113ADD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A1FA459-C452-4E81-BCB3-9ED928113ADD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A1FA459-C452-4E81-BCB3-9ED928113ADD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4308A69E-3DAF-4F96-BBDD-CB5772269F51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4308A69E-3DAF-4F96-BBDD-CB5772269F51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4308A69E-3DAF-4F96-BBDD-CB5772269F51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4308A69E-3DAF-4F96-BBDD-CB5772269F51}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
