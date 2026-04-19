@@ -3,6 +3,7 @@ using MonoGame.Extended;
 using RichTextExtended.Source.Banks;
 using RichTextExtended.Source.TextEffects;
 using System;
+using System.Globalization;
 
 namespace RichTextExtended.Source.Parser;
 
@@ -37,7 +38,9 @@ public static class ParserHelper
             return defaultValue;
         }
 
-        return float.TryParse(arg, out float result) ? result : defaultValue;
+        return float.TryParse(arg, NumberStyles.Float, CultureInfo.InvariantCulture, out float result)
+            ? result
+            : defaultValue;
     }
 
     public static WaveMode ParseWaveMode(string arg, WaveMode defaultValue)
