@@ -5,11 +5,9 @@ namespace RichTextExtended.Source.TextEffects;
 
 public class WaveEffect : TextEffect
 {
-    public const string TAG = "wv";
+    public const string TAG = "w";
 
     public override string TagName => TAG;
-
-    public WaveMode Mode { get; set; }
 
     public float Frequency { get; set; }
 
@@ -17,15 +15,17 @@ public class WaveEffect : TextEffect
 
     public float Phase { get; set; }
 
+    public WaveMode Mode { get; set; }
+
 
     public static WaveEffect Create(OpenTagToken token)
     {
         return new()
         {
-            Mode = ParserHelper.ParseWaveMode(token.GetArg(0), WaveMode.Vertical),
-            Frequency = ParserHelper.ParseFloat(token.GetArg(1), 8f),
-            Amplitude = ParserHelper.ParseFloat(token.GetArg(2), 2f),
-            Phase = ParserHelper.ParseFloat(token.GetArg(3), 1f)
+            Frequency = ParserHelper.ParseFloat(token.GetArg(0), 8f),
+            Amplitude = ParserHelper.ParseFloat(token.GetArg(1), 2f),
+            Phase = ParserHelper.ParseFloat(token.GetArg(2), 1f),
+            Mode = ParserHelper.ParseWaveMode(token.GetArg(3), WaveMode.Vertical)
         };
     }
 }

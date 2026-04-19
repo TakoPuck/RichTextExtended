@@ -5,7 +5,7 @@ namespace RichTextExtended.Source.TextEffects;
 
 public class HangEffect : TextEffect
 {
-    public const string TAG = "hg";
+    public const string TAG = "h";
 
     public override string TagName => TAG;
 
