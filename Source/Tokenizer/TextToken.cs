@@ -1,6 +1,4 @@
-﻿using RichTextExtended.Source.Tokenizer;
-
-namespace RichTextExtended.Source;
+﻿namespace RichTextExtended.Source.Tokenizer;
 
 public class TextToken : IToken
 {
