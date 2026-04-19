@@ -27,7 +27,7 @@ public static class Tokenizer
 
     public static IToken[] Tokenize(List<Segment> segments)
     {
-        IToken[] tokens = new IToken[segments.Count];
+        IToken[] tokens = new IToken[segments?.Count ?? 0];
 
         for (int i = 0; i < segments.Count; i++)
         {
