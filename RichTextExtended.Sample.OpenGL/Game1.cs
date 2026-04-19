@@ -8,7 +8,7 @@ using RichTextExtended.Source.Tokenizer;
 using System.Diagnostics;
 using System.IO;
 
-namespace Sample.OpenGL
+namespace RichTextExtended.Sample.OpenGL
 {
     public class Game1 : Game
     {
