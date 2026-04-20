@@ -23,12 +23,12 @@ public class Scanner
         => i < input.Length - 2 && input[i] == '\\' && IsNextCharTagOpener(input, i) && !IsNextCharTagOpener(input, i + 1);
 
     private static bool IsCharValidLeft(char c)
-        => char.IsAsciiLetter(c) // color
-        || c == '-';             // in-color
+        => char.IsAsciiLetter(c); // img
 
     private static bool IsCharValidRight(char c)
         => char.IsAsciiDigit(c)  // 1
         || char.IsAsciiLetter(c) // red
+        || c == '-'              // my-icon
         || c == ' '              // 1 1
         || c == '#'              // #001100
         || c == '.';             // 0.1
@@ -65,9 +65,8 @@ public class Scanner
 
     private bool IsTagValid()
     {
-        return _isCloseTag
-            ? (_hasLeftPart && _beforeEqual && !_hasRightPart)
-            : (_hasLeftPart && !_beforeEqual && _hasRightPart);
+        return (_hasLeftPart && _beforeEqual && !_hasRightPart)  // </color> or <b>
+            || (_hasLeftPart && !_beforeEqual && _hasRightPart); // <color=red>
     }
 
     private void ResetFlags()
