@@ -2,7 +2,7 @@
 using RichTextExtended.Source.Banks;
 using RichTextExtended.Source.Parser;
 using RichTextExtended.Source.Tokenizer;
-using System.Runtime.InteropServices;
+using System.Globalization;
 
 namespace RichTextExtended.Source.TextEffects;
 
@@ -22,7 +22,7 @@ public class PaletteEffect : TextEffect
         var args = token.Args;
         
         float interval = 0f;
-        bool hasInterval = args.Length > 0 && float.TryParse(args[^1], out interval);
+        bool hasInterval = args.Length > 0 && float.TryParse(args[^1], NumberStyles.Float, CultureInfo.InvariantCulture, out interval);
         int colorCount = args.Length - (hasInterval ? 1 : 0);
 
         if (!BankRegistry.Instance.PaletteBank.TryGetValue(token.GetArg(0), out Color[] colors))
