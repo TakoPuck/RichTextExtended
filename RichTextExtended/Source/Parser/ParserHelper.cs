@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using MonoGame.Extended;
+using MonoGame.Extended.Graphics;
+using RichTextExtended.Source.Assets;
 using RichTextExtended.Source.Banks;
 using RichTextExtended.Source.TextEffects;
 using System;
@@ -9,16 +11,30 @@ namespace RichTextExtended.Source.Parser;
 
 public static class ParserHelper
 {
+    public static Texture2DRegion ParseImage(string arg, Texture2DRegion defaultValue)
+    {
+        return BankRegistry.Instance.ImageBank.TryGetValue(arg, out Texture2DRegion image)
+            ? image
+            : defaultValue;
+    }
+
+    public static FontGroup ParseFont(string arg, FontGroup defaultValue)
+    {
+        return BankRegistry.Instance.FontBank.TryGetValue(arg, out FontGroup font)
+            ? font
+            : defaultValue;
+    }
+
     public static Color ParseColor(string arg, Color defaultValue)
     {
-        if (string.IsNullOrEmpty(arg))
-        {
-            return defaultValue;
-        }
-
         if (BankRegistry.Instance.ColorBank.TryGetValue(arg, out Color color))
         {
             return color;
+        }
+
+        if (string.IsNullOrEmpty(arg))
+        {
+            return defaultValue;
         }
 
         try

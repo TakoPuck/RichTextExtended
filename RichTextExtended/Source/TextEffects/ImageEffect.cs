@@ -1,4 +1,6 @@
-﻿using RichTextExtended.Source.Tokenizer;
+﻿using MonoGame.Extended.Graphics;
+using RichTextExtended.Source.Parser;
+using RichTextExtended.Source.Tokenizer;
 
 namespace RichTextExtended.Source.TextEffects;
 
@@ -8,14 +10,14 @@ public class ImageEffect : TextEffect
 
     public override string TagName => TAG;
 
-    public string Id { get; set; }
+    public Texture2DRegion TexRegion { get; set; }
 
 
     public static ImageEffect Create(OpenTagToken token)
     {
         return new()
         {
-            Id = token.GetArg(0)
+            TexRegion = ParserHelper.ParseImage(token.GetArg(0), null)
         };
     }
 }
