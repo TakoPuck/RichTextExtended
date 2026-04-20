@@ -20,9 +20,9 @@ public class HangEffect : TextEffect
     {
         return new()
         {
-            Frequency = ParserHelper.ParseFloat(token.GetArg(1), 6f),
-            Amplitude = ParserHelper.ParseFloat(token.GetArg(2), 9f),
-            Phase = ParserHelper.ParseFloat(token.GetArg(3), 1f)
+            Frequency = ParserHelper.ParseFloat(token.GetArg(0), 6f),
+            Amplitude = ParserHelper.ParseFloat(token.GetArg(1), 9f),
+            Phase = ParserHelper.ParseFloat(token.GetArg(2), 1f)
         };
     }
 }
