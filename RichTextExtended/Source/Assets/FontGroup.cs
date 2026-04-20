@@ -1,4 +1,5 @@
 ﻿using MonoGame.Extended.BitmapFonts;
+using System;
 
 namespace RichTextExtended.Source.Assets;
 
@@ -15,6 +16,8 @@ public class FontGroup
 
     public FontGroup(BitmapFont normal, BitmapFont bold = null, BitmapFont italic = null, BitmapFont boldAndItalic = null)
     {
+        ArgumentNullException.ThrowIfNull(normal);
+
         Normal = normal;
         Bold = bold ?? normal;
         Italic = italic ?? normal;
