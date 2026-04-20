@@ -12,7 +12,6 @@ namespace RichTextExtended.Tests;
 
 public class ParserTests
 {
-    private readonly RichTextScanner _scanner = new();
     private readonly Color[] _palette;
 
     public ParserTests()
@@ -29,7 +28,7 @@ public class ParserTests
 
     private List<TextRun> Parse(string input)
     {
-        var segments = _scanner.Scan(input);
+        var segments = RichTextScanner.Scan(input);
         var tokens = RichTextTokenizer.Tokenize(segments);
         return RichTextParser.Parse(tokens);
     }

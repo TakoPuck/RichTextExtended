@@ -3,19 +3,8 @@ using System.Text;
 
 namespace RichTextExtended.Scanner;
 
-public class RichTextScanner
+public static class RichTextScanner
 {
-    private readonly StringBuilder _sbText = new();
-    private readonly StringBuilder _sbTag = new();
-
-    private List<Segment> _segments;
-    private bool _tagOpened;
-    private bool _isProtected;
-    private bool _beforeEqual = true;
-    private bool _hasLeftPart;
-    private bool _hasRightPart;
-    private bool _isCloseTag;
-
     private static bool IsNextCharTagOpener(string input, int i)
         => i < input.Length - 1 && input[i + 1] == '<';
 
@@ -23,147 +12,152 @@ public class RichTextScanner
         => i < input.Length - 2 && input[i] == '\\' && IsNextCharTagOpener(input, i) && !IsNextCharTagOpener(input, i + 1);
 
     private static bool IsCharValidLeft(char c)
-        => char.IsAsciiLetter(c); // img
+        => char.IsAsciiLetter(c);
 
     private static bool IsCharValidRight(char c)
-        => char.IsAsciiDigit(c)  // 1
-        || char.IsAsciiLetter(c) // red
-        || c == '-'              // my-icon
-        || c == ' '              // 1 1
-        || c == '#'              // #001100
-        || c == '.';             // 0.1
+        => char.IsAsciiDigit(c)
+        || char.IsAsciiLetter(c)
+        || c == '-'
+        || c == ' '
+        || c == '#'
+        || c == '.';
 
-    private bool ValidateCharInTag(char c)
+    private static bool ValidateCharInTag(ref ScanState state, char c)
     {
         if (c == '/')
         {
-            if (_isCloseTag || _hasLeftPart) return false;
-
-            _isCloseTag = true;
+            if (state.IsCloseTag || state.HasLeftPart) return false;
+            state.IsCloseTag = true;
             return true;
         }
-        
+
         if (c == '=')
         {
-            if (!_beforeEqual || !_hasLeftPart) return false;
-
-            _beforeEqual = false;
+            if (!state.BeforeEqual || !state.HasLeftPart) return false;
+            state.BeforeEqual = false;
             return true;
         }
 
-        if (_beforeEqual)
+        if (state.BeforeEqual)
         {
             bool isValidLeft = IsCharValidLeft(c);
-            _hasLeftPart |= isValidLeft;
+            state.HasLeftPart |= isValidLeft;
             return isValidLeft;
         }
 
         bool isValidRight = IsCharValidRight(c);
-        _hasRightPart |= isValidRight;
+        state.HasRightPart |= isValidRight;
         return isValidRight;
     }
 
-    private bool IsTagValid()
-    {
-        return (_hasLeftPart && _beforeEqual && !_hasRightPart)  // </color> or <b>
-            || (_hasLeftPart && !_beforeEqual && _hasRightPart); // <color=red>
-    }
+    private static bool IsTagValid(ref ScanState state)
+        => (state.HasLeftPart && state.BeforeEqual && !state.HasRightPart)
+        || (state.HasLeftPart && !state.BeforeEqual && state.HasRightPart);
 
-    private void ResetFlags()
+    private static void Flush(ref ScanState state, StringBuilder sb, SegmentType type)
     {
-        _isProtected = _tagOpened = _hasLeftPart = _hasRightPart = _isCloseTag = false;
-        _beforeEqual = true;
-    }
-
-    private void Flush(StringBuilder sb, SegmentType type)
-    {
-        Segment s = new(type, sb.ToString());
-        _segments.Add(s);
+        state.Segments.Add(new Segment(type, sb.ToString()));
         sb.Clear();
     }
 
-    private void FlushText()
+    private static void FlushText(ref ScanState state)
     {
-        if (_sbText.Length <= 0) return;
-
-        Flush(_sbText, SegmentType.Text);
+        if (state.SbText.Length <= 0) return;
+        Flush(ref state, state.SbText, SegmentType.Text);
     }
 
-    private void FlushTag()
+    private static void FlushTag(ref ScanState state)
     {
-        var type = _sbTag[1] == '/' ? SegmentType.CloseTag : SegmentType.OpenTag;
-
-        // Remove '<' or '</' from tag
-        _sbTag.Remove(0, type == SegmentType.CloseTag ? 2 : 1);
-
-        Flush(_sbTag, type);
+        var type = state.SbTag[1] == '/' ? SegmentType.CloseTag : SegmentType.OpenTag;
+        state.SbTag.Remove(0, type == SegmentType.CloseTag ? 2 : 1);
+        Flush(ref state, state.SbTag, type);
     }
 
-    private void EmptyTagIntoText()
+    private static void EmptyTagIntoText(ref ScanState state)
     {
-        _sbText.Append(_sbTag);
-        _sbTag.Clear();
+        state.SbText.Append(state.SbTag);
+        state.SbTag.Clear();
     }
 
-    public List<Segment> Scan(string input)
+    public static List<Segment> Scan(string input)
     {
-        _segments = [];
+        ScanState state = new();
 
         for (int i = 0; i < input.Length; i++)
         {
             char c = input[i];
 
-            if (_tagOpened)
+            if (state.TagOpened)
             {
-                if (c != '>' && ValidateCharInTag(c))
+                if (c != '>' && ValidateCharInTag(ref state, c))
                 {
-                    _sbTag.Append(c);
+                    state.SbTag.Append(c);
                     continue;
                 }
 
                 bool consumedProtection = false;
-                if (c == '>' && IsTagValid())
-                { 
-                    if (_isProtected)
+                if (c == '>' && IsTagValid(ref state))
+                {
+                    if (state.IsProtected)
                     {
                         consumedProtection = true;
                     }
                     else
                     {
-                        FlushText();
-                        FlushTag();
-                        ResetFlags();
+                        FlushText(ref state);
+                        FlushTag(ref state);
+                        state.ResetFlags();
                         continue;
                     }
                 }
 
-                if (!consumedProtection && _isProtected)
-                {
-                    _sbText.Append('\\');
-                }
+                if (!consumedProtection && state.IsProtected)
+                    state.SbText.Append('\\');
 
-                EmptyTagIntoText();
-                ResetFlags();
+                EmptyTagIntoText(ref state);
+                state.ResetFlags();
             }
 
             if (c == '<' && !IsNextCharTagOpener(input, i))
             {
-                _tagOpened = true;
-                _sbTag.Append(c);
+                state.TagOpened = true;
+                state.SbTag.Append(c);
             }
             else if (!IsTagOpenerProtection(input, i))
             {
-                _sbText.Append(c);
+                state.SbText.Append(c);
             }
             else
             {
-                _isProtected = true;
+                state.IsProtected = true;
             }
         }
 
-        EmptyTagIntoText();
-        FlushText();
+        EmptyTagIntoText(ref state);
+        FlushText(ref state);
 
-        return _segments;
+        return state.Segments;
+    }
+
+    private ref struct ScanState
+    {
+        public StringBuilder SbText = new();
+        public StringBuilder SbTag = new();
+        public List<Segment> Segments = [];
+        public bool TagOpened;
+        public bool IsProtected;
+        public bool BeforeEqual = true;
+        public bool HasLeftPart;
+        public bool HasRightPart;
+        public bool IsCloseTag;
+
+        public ScanState()
+        { }
+
+        public void ResetFlags()
+        {
+            IsProtected = TagOpened = HasLeftPart = HasRightPart = IsCloseTag = false;
+            BeforeEqual = true;
+        }
     }
 }
