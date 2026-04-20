@@ -27,12 +27,10 @@ namespace RichTextExtended.Sample.OpenGL
             _bmfont = BitmapFont.FromFile(GraphicsDevice, Path.Combine("Content", "Fonts", "WispelldomFnt.fnt"));
 
             RichTextScanner scanner = new();
-            RichTextParser parser = new();
-
             string input = "<c=red> Hi <w=1.1 2.2 0 h>there</w></c> !";
             var segments = scanner.Scan(input);
             var tokens = RichTextTokenizer.Tokenize(segments);
-            var output = parser.Parse(tokens);
+            var output = RichTextParser.Parse(tokens);
 
             int debug = 1;
 

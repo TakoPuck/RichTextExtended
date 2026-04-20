@@ -5,13 +5,11 @@ using System.Collections.Generic;
 
 namespace RichTextExtended.Parser;
 
-public class RichTextParser
+public static class RichTextParser
 {
-    private readonly List<TextEffect> _activeEffects = [];
-
-
-    public List<TextRun> Parse(IToken[] tokens)
+    public static List<TextRun> Parse(IToken[] tokens)
     {
+        List<TextEffect> activeEffects = [];
         List<TextRun> runs = [];
 
         for (int i = 0; i < tokens.Length; i++)
@@ -26,29 +24,29 @@ public class RichTextParser
 
                         if (effect is ImageEffect || effect is TransitionPauseEffect)
                         {
-                            TextRun run = new(string.Empty, [.. _activeEffects, effect]);
+                            TextRun run = new(string.Empty, [.. activeEffects, effect]);
                             runs.Add(run);
                         }
                         else
                         {
-                            _activeEffects.Add(effect);
+                            activeEffects.Add(effect);
                         }
                         break;
                     }
 
                 case CloseTagToken closeTag:
                     {
-                        TextEffect toRemoved = _activeEffects.FindLast(e => e.TagName == closeTag.Name);
+                        TextEffect toRemoved = activeEffects.FindLast(e => e.TagName == closeTag.Name);
                         if (toRemoved != null)
                         {
-                            _activeEffects.Remove(toRemoved);
+                            activeEffects.Remove(toRemoved);
                         }
                         break;
                     }
 
                 case TextToken text:
                     {
-                        TextRun run = new(text.Text, [.. _activeEffects]);
+                        TextRun run = new(text.Text, [.. activeEffects]);
                         runs.Add(run);
                         break;
                     }
@@ -58,7 +56,7 @@ public class RichTextParser
             }
         }
 
-        _activeEffects.Clear();
+        activeEffects.Clear();
 
         return runs;
     }

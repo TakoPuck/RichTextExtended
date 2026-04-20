@@ -13,7 +13,6 @@ namespace RichTextExtended.Tests;
 public class ParserTests
 {
     private readonly RichTextScanner _scanner = new();
-    private readonly RichTextParser _parser = new();
     private readonly Color[] _palette;
 
     public ParserTests()
@@ -32,7 +31,7 @@ public class ParserTests
     {
         var segments = _scanner.Scan(input);
         var tokens = RichTextTokenizer.Tokenize(segments);
-        return _parser.Parse(tokens);
+        return RichTextParser.Parse(tokens);
     }
 
     #region Parser
@@ -145,16 +144,6 @@ public class ParserTests
         Assert.Equal("hello", runs[0].Text);
         Assert.Single(runs[0].Effects);
         Assert.IsType<BoldEffect>(runs[0].Effects[0]);
-    }
-
-    [Fact]
-    public void UnclosedTagLeavesNoResidualEffectOnSubsequentParse()
-    {
-        Parse("<b>hello");
-        var runs = Parse("world");
-
-        Assert.Single(runs);
-        Assert.Empty(runs[0].Effects);
     }
 
     [Fact]
