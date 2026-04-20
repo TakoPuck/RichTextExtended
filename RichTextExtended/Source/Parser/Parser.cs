@@ -20,8 +20,10 @@ public class Parser
 
             switch (token)
             {
-                case OpenTagToken openTag when TextEffectFactory.TryCreate(openTag, out TextEffect effect):
+                case OpenTagToken openTag:
                     {
+                        if (!TextEffectFactory.TryCreate(openTag, out TextEffect effect)) break;
+
                         if (effect is ImageEffect || effect is TransitionPauseEffect)
                         {
                             TextRun run = new(string.Empty, [.. _activeEffects, effect]);
