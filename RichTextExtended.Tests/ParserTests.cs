@@ -1,19 +1,19 @@
 using Microsoft.Xna.Framework;
 using MonoGame.Extended.Graphics;
-using RichTextExtended.Source.Assets;
-using RichTextExtended.Source.Banks;
-using RichTextExtended.Source.Parser;
-using RichTextExtended.Source.Scanner;
-using RichTextExtended.Source.TextEffects;
-using RichTextExtended.Source.Tokenizer;
+using RichTextExtended.Assets;
+using RichTextExtended.Banks;
+using RichTextExtended.Parser;
+using RichTextExtended.Scanner;
+using RichTextExtended.TextEffects;
+using RichTextExtended.Tokenizer;
 using System.Runtime.CompilerServices;
 
 namespace RichTextExtended.Tests;
 
 public class ParserTests
 {
-    private readonly Scanner _scanner = new();
-    private readonly Parser _parser = new();
+    private readonly RichTextScanner _scanner = new();
+    private readonly RichTextParser _parser = new();
     private readonly Color[] _palette;
 
     public ParserTests()
@@ -31,7 +31,7 @@ public class ParserTests
     private List<TextRun> Parse(string input)
     {
         var segments = _scanner.Scan(input);
-        var tokens = Tokenizer.Tokenize(segments);
+        var tokens = RichTextTokenizer.Tokenize(segments);
         return _parser.Parse(tokens);
     }
 

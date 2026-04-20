@@ -1,0 +1,94 @@
+﻿using Microsoft.Xna.Framework;
+using MonoGame.Extended;
+using MonoGame.Extended.Graphics;
+using RichTextExtended.Assets;
+using RichTextExtended.Banks;
+using RichTextExtended.TextEffects;
+using System;
+using System.Globalization;
+
+namespace RichTextExtended.Parser;
+
+public static class ParserHelper
+{
+    public static Texture2DRegion ParseImage(string arg, Texture2DRegion defaultValue)
+    {
+        return BankRegistry.Instance.ImageBank.TryGetValue(arg, out Texture2DRegion image)
+            ? image
+            : defaultValue;
+    }
+
+    public static FontGroup ParseFont(string arg, FontGroup defaultValue)
+    {
+        return BankRegistry.Instance.FontBank.TryGetValue(arg, out FontGroup font)
+            ? font
+            : defaultValue;
+    }
+
+    public static Color ParseColor(string arg, Color defaultValue)
+    {
+        if (BankRegistry.Instance.ColorBank.TryGetValue(arg, out Color color))
+        {
+            return color;
+        }
+
+        if (string.IsNullOrEmpty(arg))
+        {
+            return defaultValue;
+        }
+
+        try
+        {
+            return ColorHelper.FromHex(arg);
+        }
+        catch (Exception)
+        {
+            return defaultValue;
+        }
+    }
+
+    public static float ParseFloat(string arg, float defaultValue)
+    {
+        if (string.IsNullOrEmpty(arg))
+        {
+            return defaultValue;
+        }
+
+        return float.TryParse(arg, NumberStyles.Float, CultureInfo.InvariantCulture, out float result)
+            ? result
+            : defaultValue;
+    }
+
+    public static WaveMode ParseWaveMode(string arg, WaveMode defaultValue)
+    {
+        return arg switch
+        {
+            "h" => WaveMode.Horizontal,
+            "v" => WaveMode.Vertical,
+            _ => defaultValue
+        };
+    }
+
+    public static TransitionMode ParseTransitionMode(string arg, TransitionMode defaultValue)
+    {
+        return arg switch
+        {
+            "i" => TransitionMode.In,
+            "o" => TransitionMode.Out,
+            "b" => TransitionMode.Both,
+            _ => defaultValue
+        };
+    }
+
+    public static TransitionScope ParseTransitionScope(string arg, TransitionScope defaultValue)
+    {
+        return arg switch
+        {
+            "lt" => TransitionScope.Letter,
+            "w" => TransitionScope.Word,
+            "lg" => TransitionScope.Line,
+            "t" => TransitionScope.Text,
+            _ => defaultValue
+        };
+    }
+}

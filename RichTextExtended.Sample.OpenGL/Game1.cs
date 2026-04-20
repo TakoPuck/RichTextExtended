@@ -2,10 +2,9 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.BitmapFonts;
-using RichTextExtended.Source.Parser;
-using RichTextExtended.Source.Scanner;
-using RichTextExtended.Source.Tokenizer;
-using System.Diagnostics;
+using RichTextExtended.Parser;
+using RichTextExtended.Scanner;
+using RichTextExtended.Tokenizer;
 using System.IO;
 
 namespace RichTextExtended.Sample.OpenGL
@@ -27,12 +26,12 @@ namespace RichTextExtended.Sample.OpenGL
         {
             _bmfont = BitmapFont.FromFile(GraphicsDevice, Path.Combine("Content", "Fonts", "WispelldomFnt.fnt"));
 
-            Scanner scanner = new();
-            Parser parser = new();
+            RichTextScanner scanner = new();
+            RichTextParser parser = new();
 
             string input = "<c=red> Hi <w=1.1 2.2 0 h>there</w></c> !";
             var segments = scanner.Scan(input);
-            var tokens = Tokenizer.Tokenize(segments);
+            var tokens = RichTextTokenizer.Tokenize(segments);
             var output = parser.Parse(tokens);
 
             int debug = 1;
