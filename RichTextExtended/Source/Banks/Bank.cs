@@ -26,4 +26,15 @@ public abstract class Bank<T>
     {
         _keyValuePairs.Add(key, value);
     }
+
+    public bool Remove(string key)
+    {
+        return _keyValuePairs.Remove(key);
+    }
+
+    public void Replace(string key, T newValue)
+    {
+        Remove(key);
+        Add(key, newValue);
+    }
 }
