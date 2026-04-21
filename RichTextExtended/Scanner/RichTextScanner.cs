@@ -23,6 +23,8 @@ public static class RichTextScanner
 
     private static bool ValidateCharInTag(ref ScanState state, char c)
     {
+        if (c == '>') return true;
+
         if (c == '!')
         {
             if (state.IsCloseTag || state.IsProtected || state.HasLeftPart) return false;
@@ -32,7 +34,7 @@ public static class RichTextScanner
 
         if (c == '/')
         {
-            if (state.IsProtected || state.IsCloseTag || state.HasLeftPart) return false;
+            if (state.IsCloseTag || state.HasLeftPart) return false;
             state.IsCloseTag = true;
             return true;
         }
@@ -57,8 +59,7 @@ public static class RichTextScanner
     }
 
     private static bool IsTagValid(ref ScanState state)
-        => !state.IsProtected
-        && state.HasLeftPart
+        => state.HasLeftPart
         && ((state.BeforeEqual && !state.HasRightPart)
         || (!state.BeforeEqual && state.HasRightPart));
 
@@ -81,9 +82,9 @@ public static class RichTextScanner
         Flush(ref state, state.SbTag, type);
     }
 
-    private static void EmptyTagIntoText(ref ScanState state)
+    private static void EmptyTagIntoText(ref ScanState state, bool isValid)
     {
-        if (state.IsProtected)
+        if (state.IsProtected && isValid)
         {
             state.SbTag.Remove(1, 1);
         }
@@ -102,13 +103,15 @@ public static class RichTextScanner
 
             if (state.TagOpened)
             {
-                if (c != '>' && ValidateCharInTag(ref state, c))
+                bool isValid = ValidateCharInTag(ref state, c);
+                if (c != '>' && isValid)
                 {
                     state.SbTag.Append(c);
                     continue;
                 }
 
-                if (c == '>' && IsTagValid(ref state))
+                isValid &= IsTagValid(ref state);
+                if (c == '>' && isValid && !state.IsProtected)
                 {
                     FlushText(ref state);
                     FlushTag(ref state);
@@ -116,7 +119,7 @@ public static class RichTextScanner
                     continue;
                 }
 
-                EmptyTagIntoText(ref state);
+                EmptyTagIntoText(ref state, isValid);
                 state.ResetFlags();
             }
 
@@ -131,7 +134,7 @@ public static class RichTextScanner
             }
         }
 
-        EmptyTagIntoText(ref state);
+        EmptyTagIntoText(ref state, false);
         FlushText(ref state);
 
         return state.Segments;
