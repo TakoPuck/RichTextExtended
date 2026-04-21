@@ -6,10 +6,9 @@ namespace RichTextExtended.Scanner;
 public static class RichTextScanner
 {
     private static bool IsNextCharTagOpener(string input, int i)
-        => i < input.Length - 1 && input[i + 1] == '<';
-
-    private static bool IsTagOpenerProtection(string input, int i)
-        => i < input.Length - 2 && input[i] == '\\' && IsNextCharTagOpener(input, i) && !IsNextCharTagOpener(input, i + 1);
+        => i >= 0
+        && i < input.Length - 1
+        && input[i + 1] == '<';
 
     private static bool IsCharValidLeft(char c)
         => char.IsAsciiLetter(c);
@@ -24,9 +23,16 @@ public static class RichTextScanner
 
     private static bool ValidateCharInTag(ref ScanState state, char c)
     {
+        if (c == '!')
+        {
+            if (state.IsCloseTag || state.IsProtected || state.HasLeftPart) return false;
+            state.IsProtected = true;
+            return true;
+        }
+
         if (c == '/')
         {
-            if (state.IsCloseTag || state.HasLeftPart) return false;
+            if (state.IsProtected || state.IsCloseTag || state.HasLeftPart) return false;
             state.IsCloseTag = true;
             return true;
         }
@@ -51,8 +57,10 @@ public static class RichTextScanner
     }
 
     private static bool IsTagValid(ref ScanState state)
-        => (state.HasLeftPart && state.BeforeEqual && !state.HasRightPart)
-        || (state.HasLeftPart && !state.BeforeEqual && state.HasRightPart);
+        => !state.IsProtected
+        && state.HasLeftPart
+        && ((state.BeforeEqual && !state.HasRightPart)
+        || (!state.BeforeEqual && state.HasRightPart));
 
     private static void Flush(ref ScanState state, StringBuilder sb, SegmentType type)
     {
@@ -75,6 +83,11 @@ public static class RichTextScanner
 
     private static void EmptyTagIntoText(ref ScanState state)
     {
+        if (state.IsProtected)
+        {
+            state.SbTag.Remove(1, 1);
+        }
+
         state.SbText.Append(state.SbTag);
         state.SbTag.Clear();
     }
@@ -95,24 +108,13 @@ public static class RichTextScanner
                     continue;
                 }
 
-                bool consumedProtection = false;
                 if (c == '>' && IsTagValid(ref state))
                 {
-                    if (state.IsProtected)
-                    {
-                        consumedProtection = true;
-                    }
-                    else
-                    {
-                        FlushText(ref state);
-                        FlushTag(ref state);
-                        state.ResetFlags();
-                        continue;
-                    }
+                    FlushText(ref state);
+                    FlushTag(ref state);
+                    state.ResetFlags();
+                    continue;
                 }
-
-                if (!consumedProtection && state.IsProtected)
-                    state.SbText.Append('\\');
 
                 EmptyTagIntoText(ref state);
                 state.ResetFlags();
@@ -123,13 +125,9 @@ public static class RichTextScanner
                 state.TagOpened = true;
                 state.SbTag.Append(c);
             }
-            else if (!IsTagOpenerProtection(input, i))
-            {
-                state.SbText.Append(c);
-            }
             else
             {
-                state.IsProtected = true;
+                state.SbText.Append(c);
             }
         }
 
