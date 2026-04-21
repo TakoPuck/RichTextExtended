@@ -139,7 +139,7 @@ public class ScannerTests
     {
         var segments = Scan("<!!protected>");
         Assert.Single(segments);
-        AssertText(segments[0], "<!protected>");
+        AssertText(segments[0], "<!!protected>");
     }
 
     [Fact]
@@ -148,6 +148,46 @@ public class ScannerTests
         var segments = Scan("<!/protected>");
         Assert.Single(segments);
         AssertText(segments[0], "</protected>");
+    }
+
+    [Fact]
+    public void ProtectedCloseTagInvalid()
+    {
+        var segments = Scan("<!/protec!ted>");
+        Assert.Single(segments);
+        AssertText(segments[0], "<!/protec!ted>");
+    }
+
+    [Fact]
+    public void ProtectedCloseTagUnfinished()
+    {
+        var segments = Scan("<!/protec");
+        Assert.Single(segments);
+        AssertText(segments[0], "<!/protec");
+    }
+
+    [Fact]
+    public void ProtectedTagInvalid()
+    {
+        var segments = Scan("<!protec!ted>");
+        Assert.Single(segments);
+        AssertText(segments[0], "<!protec!ted>");
+    }
+
+    [Fact]
+    public void ProtectedTagUnfinished()
+    {
+        var segments = Scan("<!protec");
+        Assert.Single(segments);
+        AssertText(segments[0], "<!protec");
+    }
+
+    [Fact]
+    public void ValidOpenAndCloseProtectedTagAroundText()
+    {
+        var segments = Scan("<!protection>text<!/protection>");
+        Assert.Single(segments);
+        AssertText(segments[0], "<protection>text</protection>");
     }
 
     [Fact]
