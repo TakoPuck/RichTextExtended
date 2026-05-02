@@ -7,6 +7,18 @@ namespace RichTextExtended.Parser;
 
 public static class RichTextParser
 {
+    private static Dictionary<Type, TextEffect> BuildEffectMap(List<TextEffect> effects)
+    {
+        Dictionary<Type, TextEffect> map = [];
+
+        foreach (var effect in effects)
+        {
+            map[effect.GetType()] = effect;
+        }
+
+        return map;
+    }
+
     public static List<TextRun> Parse(IToken[] tokens)
     {
         List<TextEffect> activeEffects = [];
@@ -24,7 +36,9 @@ public static class RichTextParser
 
                         if (effect is ImageEffect || effect is TransitionPauseEffect)
                         {
-                            TextRun run = new(string.Empty, [.. activeEffects, effect]);
+                            var map = BuildEffectMap(activeEffects);
+                            map[effect.GetType()] = effect;
+                            TextRun run = new(string.Empty, map);
                             runs.Add(run);
                         }
                         else
@@ -46,7 +60,7 @@ public static class RichTextParser
 
                 case TextToken text:
                     {
-                        TextRun run = new(text.Text, [.. activeEffects]);
+                        TextRun run = new(text.Text, BuildEffectMap(activeEffects));
                         runs.Add(run);
                         break;
                     }

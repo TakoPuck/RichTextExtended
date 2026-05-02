@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Graphics;
 using RichTextExtended.Assets;
 using RichTextExtended.Banks;
@@ -60,8 +61,8 @@ public class ParserTests
         Assert.Single(runs);
         Assert.Equal("my text", runs[0].Text);
         Assert.Equal(2, runs[0].Effects.Count);
-        Assert.Contains(runs[0].Effects, e => e is BoldEffect);
-        Assert.Contains(runs[0].Effects, e => e is ItalicEffect);
+        Assert.True(runs[0].Effects.ContainsKey(typeof(BoldEffect)));
+        Assert.True(runs[0].Effects.ContainsKey(typeof(ItalicEffect)));
     }
 
     [Fact]
@@ -73,12 +74,12 @@ public class ParserTests
 
         Assert.Equal("bold ", runs[0].Text);
         Assert.Single(runs[0].Effects);
-        Assert.IsType<BoldEffect>(runs[0].Effects[0]);
+        Assert.True(runs[0].Effects.ContainsKey(typeof(BoldEffect)));
 
         Assert.Equal("bold-italic", runs[1].Text);
         Assert.Equal(2, runs[1].Effects.Count);
-        Assert.Contains(runs[1].Effects, e => e is BoldEffect);
-        Assert.Contains(runs[1].Effects, e => e is ItalicEffect);
+        Assert.True(runs[1].Effects.ContainsKey(typeof(BoldEffect)));
+        Assert.True(runs[1].Effects.ContainsKey(typeof(ItalicEffect)));
     }
 
     [Fact]
@@ -90,9 +91,9 @@ public class ParserTests
         Assert.Equal("red", runs[0].Text);
         Assert.Equal("blue", runs[1].Text);
         Assert.Equal("green", runs[2].Text);
-        Assert.Equal(Color.Red, runs[0].Effects.OfType<ColorEffect>().Single().Color);
-        Assert.Equal(Color.Blue, runs[1].Effects.OfType<ColorEffect>().Single().Color);
-        Assert.Equal(Color.Green, runs[2].Effects.OfType<ColorEffect>().Single().Color);
+        Assert.Equal(Color.Red, ((ColorEffect)runs[0].Effects[typeof(ColorEffect)]).Color);
+        Assert.Equal(Color.Blue, ((ColorEffect)runs[1].Effects[typeof(ColorEffect)]).Color);
+        Assert.Equal(Color.Green, ((ColorEffect)runs[2].Effects[typeof(ColorEffect)]).Color);
     }
 
     [Fact]
@@ -103,8 +104,8 @@ public class ParserTests
         Assert.Single(runs);
         Assert.Equal("hi", runs[0].Text);
         Assert.Equal(2, runs[0].Effects.Count);
-        Assert.Contains(runs[0].Effects, e => e is ColorEffect);
-        Assert.Contains(runs[0].Effects, e => e is BoldEffect);
+        Assert.True(runs[0].Effects.ContainsKey(typeof(ColorEffect)));
+        Assert.True(runs[0].Effects.ContainsKey(typeof(BoldEffect)));
     }
 
     [Fact]
@@ -119,19 +120,21 @@ public class ParserTests
     }
 
     [Fact]
-    public void SameTagNestedTwiceRemovesOnlyInnermostOnFirstClose()
+    public void TagOverrideEffectOfSameType()
     {
-        var runs = Parse("<b><b>text</b> outer</b>");
+        var runs = Parse("<c=red>hi <c=blue>there</c></c>");
 
         Assert.Equal(2, runs.Count);
 
-        Assert.Equal("text", runs[0].Text);
-        Assert.Equal(2, runs[0].Effects.Count);
-        Assert.All(runs[0].Effects, e => Assert.IsType<BoldEffect>(e));
+        Assert.Equal("hi ", runs[0].Text);
+        Assert.Single(runs[0].Effects);
+        Assert.True(runs[0].TryGetEffect<ColorEffect>(out var effect));
+        Assert.Equal(Color.Red, effect.Color);
 
-        Assert.Equal(" outer", runs[1].Text);
+        Assert.Equal("there", runs[1].Text);
         Assert.Single(runs[1].Effects);
-        Assert.IsType<BoldEffect>(runs[1].Effects[0]);
+        Assert.True(runs[1].TryGetEffect<ColorEffect>(out effect));
+        Assert.Equal(Color.Blue, effect.Color);
     }
 
     [Fact]
@@ -142,7 +145,7 @@ public class ParserTests
         Assert.Single(runs);
         Assert.Equal("hello", runs[0].Text);
         Assert.Single(runs[0].Effects);
-        Assert.IsType<BoldEffect>(runs[0].Effects[0]);
+        Assert.True(runs[0].Effects.ContainsKey(typeof(BoldEffect)));
     }
 
     [Fact]
@@ -163,7 +166,7 @@ public class ParserTests
         Assert.Single(runs);
         Assert.Equal("text", runs[0].Text);
         Assert.Single(runs[0].Effects);
-        Assert.IsType<ItalicEffect>(runs[0].Effects[0]);
+        Assert.True(runs[0].Effects.ContainsKey(typeof(ItalicEffect)));
     }
 
     [Fact]
@@ -184,7 +187,7 @@ public class ParserTests
         Assert.Single(runs);
         Assert.Equal("text", runs[0].Text);
         Assert.Single(runs[0].Effects);
-        Assert.IsType<BoldEffect>(runs[0].Effects[0]);
+        Assert.True(runs[0].Effects.ContainsKey(typeof(BoldEffect)));
     }
 
     [Fact]
@@ -195,7 +198,7 @@ public class ParserTests
         Assert.Single(runs);
         Assert.Equal(string.Empty, runs[0].Text);
         Assert.Single(runs[0].Effects);
-        Assert.IsType<ImageEffect>(runs[0].Effects[0]);
+        Assert.True(runs[0].Effects.ContainsKey(typeof(ImageEffect)));
     }
 
     [Fact]
@@ -205,7 +208,7 @@ public class ParserTests
 
         Assert.Equal(2, runs.Count);
         Assert.Equal(string.Empty, runs[0].Text);
-        Assert.IsType<ImageEffect>(runs[0].Effects[0]);
+        Assert.True(runs[0].Effects.ContainsKey(typeof(ImageEffect)));
 
         Assert.Equal("after", runs[1].Text);
         Assert.Empty(runs[1].Effects);
@@ -219,7 +222,7 @@ public class ParserTests
         Assert.Single(runs);
         Assert.Equal(string.Empty, runs[0].Text);
         Assert.Single(runs[0].Effects);
-        Assert.IsType<TransitionPauseEffect>(runs[0].Effects[0]);
+        Assert.True(runs[0].Effects.ContainsKey(typeof(TransitionPauseEffect)));
     }
 
     [Fact]
@@ -229,7 +232,7 @@ public class ParserTests
 
         Assert.Equal(2, runs.Count);
         Assert.Equal(string.Empty, runs[0].Text);
-        Assert.IsType<TransitionPauseEffect>(runs[0].Effects[0]);
+        Assert.True(runs[0].Effects.ContainsKey(typeof(TransitionPauseEffect)));
 
         Assert.Equal("after", runs[1].Text);
         Assert.Empty(runs[1].Effects);
@@ -243,8 +246,8 @@ public class ParserTests
         Assert.Single(runs);
         Assert.Equal(string.Empty, runs[0].Text);
         Assert.Equal(2, runs[0].Effects.Count);
-        Assert.Contains(runs[0].Effects, e => e is BoldEffect);
-        Assert.Contains(runs[0].Effects, e => e is ImageEffect);
+        Assert.True(runs[0].Effects.ContainsKey(typeof(BoldEffect)));
+        Assert.True(runs[0].Effects.ContainsKey(typeof(ImageEffect)));
     }
 
     #endregion
@@ -257,9 +260,9 @@ public class ParserTests
         Assert.Single(runs);
         Assert.Equal(expectedText, runs[0].Text);
         Assert.Single(runs[0].Effects);
-        Assert.IsType<T>(runs[0].Effects[0]);
+        Assert.True(runs[0].Effects.ContainsKey(typeof(T)));
 
-        return runs[0].Effects.OfType<T>().Single();
+        return (T)runs[0].Effects[typeof(T)];
     }
 
     [Fact]
