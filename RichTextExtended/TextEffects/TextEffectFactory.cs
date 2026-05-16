@@ -20,6 +20,10 @@ public static class TextEffectFactory
         [ShadowEffect.TAG] = ShadowEffect.Create,
         [ColorEffect.TAG] = ColorEffect.Create,
 
+        [RotationEffect.TAG] = RotationEffect.Create,
+        [OffsetEffect.TAG] = OffsetEffect.Create,
+        [ScaleEffect.TAG] = ScaleEffect.Create,
+
         [StrikethroughEffect.TAG] = StrikethroughEffect.Create,
         [UnderlineEffect.TAG] = UnderlineEffect.Create,
         [ItalicEffect.TAG] = ItalicEffect.Create,
